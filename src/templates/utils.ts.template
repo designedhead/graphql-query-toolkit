@@ -1,0 +1,5 @@
+// Re-export generated cache utilities
+// This file automatically imports from the generated cache-utils.ts
+// which contains tRPC-like utilities based on your GraphQL operations
+
+export { queryKeys, createUtils, useUtils, type ApiUtils } from './__gen__/cache-utils';

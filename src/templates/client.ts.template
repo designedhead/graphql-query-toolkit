@@ -1,0 +1,18 @@
+import { createGraphQLClient } from '@repo/portal-query/core/client';
+
+// Create GraphQL client using the package
+const { client, getSdk } = createGraphQLClient({
+  endpoint: '{{GRAPHQL_ENDPOINT}}',
+  defaultHeaders: {
+    // Add any default headers here
+  }
+});
+
+// Export client for direct usage
+export const graphqlClient = client;
+
+// Export function to get SDK when generated files are available
+export const getGraphQLSdk = getSdk;
+
+// Re-export for compatibility
+export { getSdk };

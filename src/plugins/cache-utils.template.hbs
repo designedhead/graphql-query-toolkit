@@ -1,0 +1,180 @@
+import { useQueryClient } from '@tanstack/react-query';
+import type { QueryClient } from '@tanstack/react-query';
+{{#if hasOperations}}
+import type * as ReactQueryTypes from './plugins/react-query';
+{{/if}}
+
+/**
+ * Query key factories for consistent cache management
+ * Generated automatically from GraphQL operations
+ */
+export const queryKeys = {
+{{#each operations}}
+  {{this}}: (variables?: {{variableType this}}) =>
+    variables === undefined ? ['{{this}}'] : ['{{this}}', variables] as const,
+{{/each}}
+} as const;
+
+{{#if hasGroups}}
+/**
+ * tRPC-like cache management utilities
+ * Organized by service/domain for better developer experience
+ * Generated automatically from GraphQL operations
+ */
+export const createUtils = (queryClient: QueryClient) => ({
+{{#each groups}}
+  {{@key}}: {
+{{#each this}}
+    {{extractOpName this}}: {
+      /**
+       * Invalidate cache for {{this}}
+       * @param filters Optional filters to target specific cache entries
+       */
+      invalidate: async (filters?: Partial<{{variableType this}}>) => {
+        if (filters && Object.keys(filters).length > 0) {
+          // Filtered invalidation using predicate
+          await queryClient.invalidateQueries({
+            queryKey: ['{{this}}'],
+            predicate: (query) => {
+              if (!query.queryKey[1]) return false;
+              const variables = query.queryKey[1] as Record<string, any>;
+              return Object.entries(filters).every(([key, value]) => variables[key] === value);
+            }
+          });
+        } else {
+          // Broad invalidation
+          await queryClient.invalidateQueries({ queryKey: ['{{this}}'] });
+        }
+      },
+
+      /**
+       * Refetch cache for {{this}}
+       * @param filters Optional filters to target specific cache entries
+       */
+      refetch: async (filters?: Partial<{{variableType this}}>) => {
+        if (filters && Object.keys(filters).length > 0) {
+          // Filtered refetch using predicate
+          await queryClient.refetchQueries({
+            queryKey: ['{{this}}'],
+            predicate: (query) => {
+              if (!query.queryKey[1]) return false;
+              const variables = query.queryKey[1] as Record<string, any>;
+              return Object.entries(filters).every(([key, value]) => variables[key] === value);
+            }
+          });
+        } else {
+          // Broad refetch
+          await queryClient.refetchQueries({ queryKey: ['{{this}}'] });
+        }
+      },
+
+      /**
+       * Get cached data for {{this}}
+       * @param variables Query variables to target specific cache entry
+       */
+      getData: (variables?: {{variableType this}}): {{queryType this}} | undefined => {
+        return queryClient.getQueryData(queryKeys.{{this}}(variables));
+      },
+
+      /**
+       * Set cached data for {{this}}
+       * @param updater Function that receives existing data and returns new data
+       * @param variables Query variables to target specific cache entry
+       */
+      setData: (updater: (existing: {{queryType this}} | undefined) => {{queryType this}}, variables?: {{variableType this}}) => {
+        queryClient.setQueryData(queryKeys.{{this}}(variables), updater);
+      },
+
+      /**
+       * Cancel pending queries for {{this}}
+       * @param filters Optional filters to target specific queries
+       */
+      cancel: async (filters?: Partial<{{variableType this}}>) => {
+        if (filters && Object.keys(filters).length > 0) {
+          // Filtered cancel using predicate
+          await queryClient.cancelQueries({
+            queryKey: ['{{this}}'],
+            predicate: (query) => {
+              if (!query.queryKey[1]) return false;
+              const variables = query.queryKey[1] as Record<string, any>;
+              return Object.entries(filters).every(([key, value]) => variables[key] === value);
+            }
+          });
+        } else {
+          // Broad cancel
+          await queryClient.cancelQueries({ queryKey: ['{{this}}'] });
+        }
+      }
+    },
+{{/each}}
+  },
+{{/each}}
+});
+
+/**
+ * React hook that provides tRPC-like utils
+ * Usage: const utils = useUtils();
+ * 
+ * Example:
+ * ```tsx
+ * const utils = useUtils();
+ *
+ * // Invalidate cache for specific query
+ * await utils.general.getProducts.invalidate({ first: 10 });
+ *
+ * // Set data optimistically
+ * utils.general.getCategories.setData((existing) => ({ ...existing, newData }));
+ *
+ * // Get cached data
+ * const cached = utils.general.getProduct.getData({ id: '123' });
+ * ```
+ */
+{{#if serviceName}}
+export const use{{pascalCase serviceName}}Utils = (): ReturnType<typeof createUtils> => {
+  const queryClient = useQueryClient();
+  return createUtils(queryClient);
+};
+
+// Backwards-compatible alias
+export const useUtils = use{{pascalCase serviceName}}Utils;
+{{else}}
+export const useUtils = (): ReturnType<typeof createUtils> => {
+  const queryClient = useQueryClient();
+  return createUtils(queryClient);
+};
+{{/if}}
+
+/**
+ * Type for the utils object - automatically generated from GraphQL operations
+ */
+export type ApiUtils = ReturnType<typeof createUtils>;
+{{else}}
+/**
+ * Default utils structure - will be populated after adding GraphQL operations
+ * Run `pnpm gql` after adding .gql files to generate typed utils
+ */
+export const createUtils = (queryClient: QueryClient) => ({
+  // Waiting for GraphQL operations to be added...
+  // After running codegen, this will contain grouped operations like:
+  // general: {
+  //   getProducts: { invalidate, refetch, getData, setData, cancel },
+  //   getCategories: { invalidate, refetch, getData, setData, cancel }
+  // }
+});
+
+export const useUtils = (): ReturnType<typeof createUtils> => {
+  const queryClient = useQueryClient();
+  return createUtils(queryClient);
+};
+
+export type ApiUtils = ReturnType<typeof createUtils>;
+{{/if}}
+
+{{#if hasOperations}}
+/**
+ * Available operations in this app:
+{{#each operations}}
+ * - {{this}}
+{{/each}}
+ */
+{{/if}}

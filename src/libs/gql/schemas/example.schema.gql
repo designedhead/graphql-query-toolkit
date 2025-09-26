@@ -1,0 +1,10 @@
+# Example GraphQL Operations
+# Replace with your actual queries and mutations
+
+query GetExample {
+  # Add your query fields here
+}
+
+mutation CreateExample($input: CreateExampleInput!) {
+  # Add your mutation fields here
+}

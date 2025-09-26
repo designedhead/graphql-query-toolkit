@@ -1,0 +1,437 @@
+# GraphQL Integration - {{appName}}
+
+> **🚀 Powered by [@repo/portal-query]**  
+> This README is automatically generated based on your GraphQL operations.
+
+## 📊 Overview
+
+{{#if totalOperations}}
+This app has **{{totalOperations}} GraphQL operations** organized across **{{#if hasGroups}}{{#each groups}}{{@index}}{{#unless @last}}, {{/unless}}{{/each}} service{{#if (gt (len groups) 1)}}s{{/if}}{{else}}1 service{{/if}}**:
+
+{{#if hasOperations}}
+- **{{operations.length}} Queries** for data fetching
+{{/if}}
+{{#if hasMutations}}
+- **{{mutations.length}} Mutations** for data modification
+{{/if}}
+{{#if hasSubscriptions}}
+- **{{subscriptions.length}} Subscriptions** for real-time updates
+{{/if}}
+{{else}}
+No GraphQL operations found. Add `.gql` files to the `schemas/` directory and run `pnpm gql` to generate this documentation.
+{{/if}}
+
+## 🚀 Quick Start
+
+```tsx
+{{#if isMultiEndpoint}}
+import { {{#if hasOperations}}{{#each operations}}{{hookName this "query"}}{{#unless @last}}, {{/unless}}{{/each}}{{/if}}{{#if hasMutations}}{{#if hasOperations}}, {{/if}}{{#each mutations}}{{hookName this "mutation"}}{{#unless @last}}, {{/unless}}{{/each}}{{/if}} } from '@/libs/gql';
+import { {{#each endpoints}}use{{pascalCase this}}Utils{{#unless @last}}, {{/unless}}{{/each}} } from '@/libs/gql/__gen__';
+{{else}}
+import { {{#if hasOperations}}{{#each operations}}{{hookName this "query"}}{{#unless @last}}, {{/unless}}{{/each}}{{/if}}{{#if hasMutations}}{{#if hasOperations}}, {{/if}}{{#each mutations}}{{hookName this "mutation"}}{{#unless @last}}, {{/unless}}{{/each}}{{/if}}{{#if serviceName}}, use{{pascalCase serviceName}}Utils{{else}}, useUtils{{/if}} } from '@/libs/gql';
+{{/if}}
+
+const MyComponent = () => {
+{{#if hasOperations}}
+  // Query hooks
+{{#each operations}}
+  const { data: {{camelCase this}}Data, isLoading: {{camelCase this}}Loading } = {{hookName this "query"}}();
+{{/each}}
+{{/if}}
+
+{{#if hasMutations}}
+  // Mutation hooks  
+{{#each mutations}}
+  const {{camelCase this}} = {{hookName this "mutation"}}();
+{{/each}}
+{{/if}}
+
+  // Cache management utilities (tRPC-like)
+{{#if isMultiEndpoint}}
+{{#each endpoints}}
+  const {{camelCase this}} = use{{pascalCase this}}Utils();
+{{/each}}
+{{else}}
+{{#if serviceName}}
+  const {{camelCase serviceName}} = use{{pascalCase serviceName}}Utils();
+{{else}}
+  const utils = useUtils();
+{{/if}}
+{{/if}}
+
+  const handleRefresh = async () => {
+{{#if isMultiEndpoint}}
+    // Example: Refresh operations across all endpoints
+{{#if hasGroups}}
+{{#each groups}}
+{{#if (hasItems this.queries)}}
+{{#each this.queries}}
+    // await {{camelCase @../key}}.{{@../key}}.{{extractOpName this}}.invalidate();
+{{/each}}
+{{/if}}
+{{/each}}
+{{/if}}
+{{else}}
+{{#if hasGroups}}
+{{#each groups}}
+{{#if (hasItems this.queries)}}
+{{#each this.queries}}
+{{#if ../../../serviceName}}
+    await {{camelCase ../../../serviceName}}.{{@../key}}.{{extractOpName this}}.invalidate();
+{{else}}
+    await utils.{{@../key}}.{{extractOpName this}}.invalidate();
+{{/if}}
+{{/each}}
+{{/if}}
+{{/each}}
+{{/if}}
+{{/if}}
+  };
+
+  return (
+    <div>
+{{#if hasOperations}}
+      {/* Render your data here */}
+      {isLoading && <div>Loading...</div>}
+{{/if}}
+      <button onClick={handleRefresh}>Refresh Data</button>
+    </div>
+  );
+};
+```
+
+{{#if hasGroups}}
+## 📋 Available Operations
+
+{{#each groups}}
+### {{@key}} Service
+
+{{#if (hasItems this.queries)}}
+**Queries:**
+{{#each this.queries}}
+- `{{this}}` → `{{hookName this "query"}}()`
+{{#if ../../serviceName}}
+  - Utils: `{{camelCase ../../serviceName}}.{{@../key}}.{{extractOpName this}}.{invalidate|refetch|getData|setData|cancel}()`
+{{else}}
+  - Utils: `utils.{{@../key}}.{{extractOpName this}}.{invalidate|refetch|getData|setData|cancel}()`
+{{/if}}
+{{/each}}
+{{/if}}
+
+{{#if (hasItems this.mutations)}}
+**Mutations:**
+{{#each this.mutations}}
+- `{{this}}` → `{{hookName this "mutation"}}()`
+{{/each}}
+{{/if}}
+
+{{#if (hasItems this.subscriptions)}}
+**Subscriptions:**
+{{#each this.subscriptions}}
+- `{{this}}` → `{{hookName this "subscription"}}()`
+{{/each}}
+{{/if}}
+
+{{/each}}
+{{/if}}
+
+## 🎯 Cache Management (tRPC-like Utils)
+
+The utils system provides powerful cache management similar to tRPC:
+
+```tsx
+{{#if isMultiEndpoint}}
+{{#each endpoints}}
+const {{camelCase this}} = use{{pascalCase this}}Utils();
+{{/each}}
+
+{{#if hasGroups}}
+{{#each groups}}
+// {{@key}} operations
+{{#if (hasItems this.queries)}}
+{{#each this.queries}}
+// Example: await serviceA.{{@../key}}.{{extractOpName this}}.invalidate();     // Invalidate cache
+// Example: await serviceB.{{@../key}}.{{extractOpName this}}.invalidate();        // Invalidate cache
+{{/each}}
+
+{{/if}}
+{{/each}}
+{{/if}}
+{{else}}
+{{#if serviceName}}
+const {{camelCase serviceName}} = use{{pascalCase serviceName}}Utils();
+
+{{#if hasGroups}}
+{{#each groups}}
+// {{@key}} operations
+{{#if (hasItems this.queries)}}
+{{#each this.queries}}
+await {{camelCase ../../../serviceName}}.{{@../key}}.{{extractOpName this}}.invalidate();     // Invalidate cache
+await {{camelCase ../../../serviceName}}.{{@../key}}.{{extractOpName this}}.refetch();        // Refetch from server
+const cached = {{camelCase ../../../serviceName}}.{{@../key}}.{{extractOpName this}}.getData(); // Get cached data
+{{camelCase ../../../serviceName}}.{{@../key}}.{{extractOpName this}}.setData(newData);       // Set cache data
+await {{camelCase ../../../serviceName}}.{{@../key}}.{{extractOpName this}}.cancel();         // Cancel pending requests
+{{/each}}
+
+{{/if}}
+{{/each}}
+{{/if}}
+{{else}}
+const utils = useUtils();
+
+{{#if hasGroups}}
+{{#each groups}}
+// {{@key}} operations
+{{#if (hasItems this.queries)}}
+{{#each this.queries}}
+await utils.{{@../key}}.{{extractOpName this}}.invalidate();     // Invalidate cache
+await utils.{{@../key}}.{{extractOpName this}}.refetch();        // Refetch from server
+const cached = utils.{{@../key}}.{{extractOpName this}}.getData(); // Get cached data
+utils.{{@../key}}.{{extractOpName this}}.setData(newData);       // Set cache data
+await utils.{{@../key}}.{{extractOpName this}}.cancel();         // Cancel pending requests
+{{/each}}
+
+{{/if}}
+{{/each}}
+{{/if}}
+{{/if}}
+{{/if}}
+```
+
+### Cache Utils Features
+
+- **🔄 Invalidation**: `invalidate()` - Mark cache as stale and trigger refetch
+- **🔃 Refetch**: `refetch()` - Force fetch fresh data from server  
+- **📦 Get Data**: `getData()` - Access current cached data
+- **💾 Set Data**: `setData()` - Optimistically update cache
+- **❌ Cancel**: `cancel()` - Cancel in-flight requests
+
+## 🏗️ Usage Patterns
+
+### Client Components
+
+```tsx
+'use client';
+
+{{#if isMultiEndpoint}}
+import { {{#if hasOperations}}{{hookName (first operations) "query"}}{{/if}} } from '@/libs/gql';
+import { {{#each endpoints}}use{{pascalCase this}}Utils{{#unless @last}}, {{/unless}}{{/each}} } from '@/libs/gql/__gen__';
+
+const ClientComponent = () => {
+{{#if hasOperations}}
+  const { data, isLoading, error } = {{hookName (first operations) "query"}}();
+{{/if}}
+{{#each endpoints}}
+  const {{camelCase this}} = use{{pascalCase this}}Utils();
+{{/each}}
+{{else}}
+import { {{#if hasOperations}}{{hookName (first operations) "query"}}{{/if}}{{#if serviceName}}, use{{pascalCase serviceName}}Utils{{else}}, useUtils{{/if}} } from '@/libs/gql';
+
+const ClientComponent = () => {
+{{#if hasOperations}}
+  const { data, isLoading, error } = {{hookName (first operations) "query"}}();
+{{/if}}
+{{#if serviceName}}
+  const {{camelCase serviceName}} = use{{pascalCase serviceName}}Utils();
+{{else}}
+  const utils = useUtils();
+{{/if}}
+{{/if}}
+
+{{#if hasOperations}}
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+{{/if}}
+
+  return (
+    <div>
+      {/* Your component JSX */}
+      <button onClick={() => {
+{{#if isMultiEndpoint}}
+        // Example: serviceA.general.someOperation.invalidate()
+        // Example: serviceB.general.someOperation.invalidate()
+{{else}}
+{{#if serviceName}}
+        // Example: {{camelCase serviceName}}.general.someOperation.invalidate()
+{{else}}
+        // Example: utils.general.someOperation.invalidate()
+{{/if}}
+{{/if}}
+      }}>
+        Refresh
+      </button>
+    </div>
+  );
+};
+```
+
+### Server Components
+
+```tsx
+import { auth } from '@/libs/auth';
+{{#if hasOperations}}
+import { {{hookName (first operations) "query"}} } from '@/libs/gql';
+{{/if}}
+
+export default async function ServerComponent() {
+  const sessionResult = await auth.getSession();
+  
+{{#if hasOperations}}
+  const fetcher = {{hookName (first operations) "query"}}.fetcher(undefined, {
+    Authorization: `Bearer ${sessionResult.session.access_token}`
+  });
+  
+  const data = await fetcher();
+{{/if}}
+
+  return (
+    <div>
+      {/* Server-rendered content */}
+    </div>
+  );
+}
+```
+
+## 📁 File Structure
+
+```
+src/libs/gql/
+├── schemas/                    # Your GraphQL operations (.gql files)
+{{#each operations}}
+│   ├── {{kebabCase this}}.gql     # Contains {{this}}
+{{/each}}
+├── __gen__/                   # 🤖 Auto-generated (do not edit)
+│   ├── index.ts              # Generated types and utilities
+│   ├── graphql.ts            # GraphQL documents
+│   ├── cache-utils.ts        # 🎯 tRPC-like cache management
+│   └── plugins/              # Generated hooks and fetchers
+│       ├── react-query.ts    # React Query hooks
+│       └── graphql-request.ts # GraphQL request utilities
+├── client.ts                 # GraphQL client configuration
+├── codegen.config.ts         # Code generation configuration  
+├── utils.ts                  # Utils re-exports
+├── index.ts                  # Main exports
+└── README.md                 # 📖 This file (auto-generated)
+```
+
+## 🔧 Commands
+
+```bash
+# Generate GraphQL code (run after editing .gql files)
+pnpm gql
+
+# Watch for changes and regenerate automatically
+pnpm gql:watch
+
+# Format generated files
+pnpm gql:format
+```
+
+## 🎨 Adding New Operations
+
+1. **Create or edit `.gql` files** in `schemas/` directory:
+
+```graphql
+# schemas/users.schema.gql
+query GetUserProfile($userId: ID!) {
+  user(id: $userId) {
+    id
+    name
+    email
+  }
+}
+
+mutation UpdateUser($userId: ID!, $input: UpdateUserInput!) {
+  updateUser(id: $userId, input: $input) {
+    id
+    name
+    email  
+  }
+}
+```
+
+2. **Run code generation**:
+
+```bash
+pnpm gql
+```
+
+3. **Use in components**:
+
+```tsx
+{{#if isMultiEndpoint}}
+import { useGetUserProfileQuery, useUpdateUserMutation } from '@/libs/gql';
+import { {{#each endpoints}}use{{pascalCase this}}Utils{{#unless @last}}, {{/unless}}{{/each}} } from '@/libs/gql/__gen__';
+
+const UserProfile = ({ userId }) => {
+  const { data } = useGetUserProfileQuery({ userId });
+  const updateUser = useUpdateUserMutation();
+{{#each endpoints}}
+  const {{camelCase this}} = use{{pascalCase this}}Utils();
+{{/each}}
+
+  const handleUpdate = async (input) => {
+    await updateUser.mutateAsync({ userId, input });
+    // Example: await serviceA.users.getUserProfile.invalidate({ userId });
+    // Example: await serviceB.users.getUserProfile.invalidate({ userId });
+  };
+{{else}}
+import { useGetUserProfileQuery, useUpdateUserMutation{{#if serviceName}}, use{{pascalCase serviceName}}Utils{{else}}, useUtils{{/if}} } from '@/libs/gql';
+
+const UserProfile = ({ userId }) => {
+  const { data } = useGetUserProfileQuery({ userId });
+  const updateUser = useUpdateUserMutation();
+{{#if serviceName}}
+  const {{camelCase serviceName}} = use{{pascalCase serviceName}}Utils();
+{{else}}
+  const utils = useUtils();
+{{/if}}
+
+  const handleUpdate = async (input) => {
+    await updateUser.mutateAsync({ userId, input });
+{{#if serviceName}}
+    await {{camelCase serviceName}}.users.getUserProfile.invalidate({ userId });
+{{else}}
+    await utils.users.getUserProfile.invalidate({ userId });
+{{/if}}
+  };
+{{/if}}
+  
+  return <div>{/* Your JSX */}</div>;
+};
+```
+
+## 🌟 Benefits
+
+- **🔒 Type Safety**: Full TypeScript coverage from schema to UI
+- **🚀 Developer Experience**: tRPC-like cache management with `utils.service.operation.method()`
+- **⚡ Performance**: Intelligent caching with React Query
+- **🔄 Auto-sync**: This README updates automatically when you add/remove operations
+- **📝 Documentation**: Generated examples match your actual GraphQL schema
+- **🛠️ Consistency**: Same patterns across all apps in the monorepo
+
+{{#unless totalOperations}}
+## 🚦 Next Steps
+
+You haven't added any GraphQL operations yet. To get started:
+
+1. Add `.gql` files to the `schemas/` directory
+2. Run `pnpm gql` to generate code and update this README
+3. Import and use the generated hooks in your components
+
+Example schema file (`schemas/example.schema.gql`):
+```graphql
+query GetExample {
+  # Add your query fields here
+}
+
+mutation CreateExample($input: CreateExampleInput!) {  
+  # Add your mutation fields here
+}
+```
+{{/unless}}
+
+---
+
+> 🤖 **This README was automatically generated** based on GraphQL operations found in your `schemas/` directory.  
+> **Operations found**: {{totalOperations}}

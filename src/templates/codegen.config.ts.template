@@ -1,0 +1,15 @@
+import { createCodegenConfig } from '@repo/portal-query/core/codegen';
+
+// Create codegen configuration using the package
+const config = createCodegenConfig({
+  schema: '{{GRAPHQL_SCHEMA_URL}}',
+  headers: {
+    'api-key': '{{API_KEY}}'
+  },
+  documentsPath: 'src/libs/gql/schemas/*.gql',
+  outputDir: 'src/libs/gql/__gen__',
+  gatewayEndpoint: '{{GATEWAY_ENDPOINT}}' || `${process.env.BASE_URL}/api/gateway`,
+  appName: '{{APP_NAME}}'
+});
+
+export default config;

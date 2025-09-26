@@ -1,0 +1,18 @@
+# Source files (only ship compiled output)
+src/
+tsconfig.json
+.turbo/
+
+# Development files
+*.md
+docs/
+.vscode/
+.idea/
+
+# Environment variables
+.env*
+
+# Cache and logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
