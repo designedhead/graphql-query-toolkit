@@ -1,10 +1,10 @@
-# Portal Query Package - Architecture & Implementation
+# GraphQL Query Toolkit - Architecture & Implementation
 
-This document explains the technical implementation, architecture decisions, and design patterns used in the `@repo/portal-query` package.
+This document explains the technical implementation, architecture decisions, and design patterns used in the `graphql-query-toolkit` package.
 
 ## Overview
 
-The `@repo/portal-query` package provides:
+The `graphql-query-toolkit` package provides:
 - **Type safety** through code generation
 - **Developer experience** similar to tRPC
 - **Scalability** across multiple services and domains
@@ -19,7 +19,7 @@ The `@repo/portal-query` package provides:
 The package is built around configurable core modules that apps can customize:
 
 ```
-packages/portal-query/src/
+graphql-query-toolkit/src/
 ├── core/                    # Configurable core modules
 │   ├── codegen.ts          # GraphQL Code Generator factory
 │   ├── client.ts           # GraphQL client factory
@@ -49,7 +49,7 @@ export function createGraphQLClient(options: ClientOptions) {
 }
 
 // In app - client.ts
-import { createGraphQLClient } from '@repo/portal-query/core/client';
+import { createGraphQLClient } from 'graphql-query-toolkit/core/client';
 
 const { client, getSdk } = createGraphQLClient({
   endpoint: 'https://api.example.com/graphql',
@@ -93,7 +93,7 @@ for (const [placeholder, value] of Object.entries(replacements)) {
 
 ```bash
 # Simple setup command
-pnpm query-gen setup --endpoint https://api.com/graphql --api-key abc123
+npx graphql-query-toolkit setup --endpoint https://api.com/graphql --api-key abc123
 
 # Generated structure is ready to use
 pnpm gql  # Run codegen
@@ -126,7 +126,7 @@ pnpm gql  # Run codegen
 ```json
 {
   "devDependencies": {
-    "@repo/portal-query": "workspace:*"
+    "graphql-query-toolkit": "^1.0.0"
   }
 }
 ```
@@ -148,7 +148,7 @@ const utils = useUtils();
 // tRPC-like API
 await utils.notifications.getApps.invalidate();
 await utils.users.getProfile.refetch();
-const data = utils.bookings.getList.getData();
+const data = utils.users.getList.getData();
 utils.analytics.getMetrics.setData(newData);
 ```
 
@@ -182,7 +182,7 @@ export function createUtilsFactory(config: UtilsConfig) {
 
 ### Generated App Structure
 
-After running `pnpm query-gen setup`, apps get this clean structure:
+After running `npx graphql-query-toolkit setup`, apps get this clean structure:
 
 ```
 src/libs/gql/
@@ -192,9 +192,9 @@ src/libs/gql/
 │   ├── index.ts
 │   ├── graphql.ts
 │   └── ...
-├── client.ts           # Uses @repo/portal-query/core/client
-├── codegen.config.ts   # Uses @repo/portal-query/core/codegen
-├── utils.ts           # Uses @repo/portal-query/core/utils
+├── client.ts           # Uses graphql-query-toolkit/core/client
+├── codegen.config.ts   # Uses graphql-query-toolkit/core/codegen
+├── utils.ts           # Uses graphql-query-toolkit/core/utils
 ├── index.ts           # App exports
 └── README.md          # App-specific usage guide
 ```
@@ -217,8 +217,8 @@ export { createGraphQLClient } from './core/client';
 export type { ClientOptions } from './core/client';
 
 // App usage
-import { createGraphQLClient } from '@repo/portal-query/core/client';
-import type { CodegenOptions } from '@repo/portal-query';
+import { createGraphQLClient } from 'graphql-query-toolkit/core/client';
+import type { CodegenOptions } from 'graphql-query-toolkit';
 ```
 
 **Rationale**:
@@ -234,9 +234,9 @@ import type { CodegenOptions } from '@repo/portal-query';
 ```json
 // App package.json scripts
 {
-  "gql": "pnpm --filter=@repo/portal-query exec graphql-codegen --config ../../apps/booking/src/libs/gql/codegen.config.ts",
-  "gql:watch": "pnpm --filter=@repo/portal-query exec graphql-codegen --config ../../apps/booking/src/libs/gql/codegen.config.ts --watch",
-  "query-gen": "query-gen"
+  "gql": "pnpm --filter=graphql-query-toolkit exec graphql-codegen --config ../../apps/booking/src/libs/gql/codegen.config.ts",
+  "gql:watch": "pnpm --filter=graphql-query-toolkit exec graphql-codegen --config ../../apps/booking/src/libs/gql/codegen.config.ts --watch",
+  "gql-setup": "graphql-query-toolkit"
 }
 ```
 
@@ -268,9 +268,9 @@ import type { CodegenOptions } from '@repo/portal-query';
 
 ### From Manual GraphQL Setup
 
-1. **Install package**: `pnpm add @repo/portal-query`
+1. **Install package**: `npm install graphql-query-toolkit`
 2. **Backup existing**: Move current GraphQL code to backup folder
-3. **Run setup**: `pnpm query-gen setup --endpoint <url> --api-key <key>`
+3. **Run setup**: `npx graphql-query-toolkit setup --endpoint <url> --api-key <key>`
 4. **Migrate queries**: Copy .gql files to schemas/ folder
 5. **Update imports**: Change imports to use new generated files
 6. **Remove dependencies**: Clean up package.json dependencies

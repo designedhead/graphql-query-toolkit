@@ -100,10 +100,6 @@ function extractServiceName(operationName) {
     const match = operationName.match(pattern);
     if (match) {
       const serviceName = transform(match);
-      // Convert common patterns
-      if (serviceName === 'notifications') return 'notifications';
-      if (serviceName === 'users') return 'users';
-      if (serviceName === 'bookings') return 'bookings';
       return serviceName;
     }
   }

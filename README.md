@@ -1,6 +1,6 @@
-# @repo/portal-query
+# graphql-query-toolkit
 
-A comprehensive GraphQL integration package for the monorepo that provides tRPC-like developer experience with type-safe cache management.
+A comprehensive GraphQL integration package that provides tRPC-like developer experience with type-safe cache management.
 
 ## Features
 
@@ -17,19 +17,18 @@ A comprehensive GraphQL integration package for the monorepo that provides tRPC-
 ### 1. Install the Package
 
 ```bash
-# Add to your app's package.json devDependencies
-{
-  "devDependencies": {
-    "@repo/portal-query": "workspace:*"
-  }
-}
+npm install graphql-query-toolkit
+
+# Or with other package managers
+pnpm add graphql-query-toolkit
+yarn add graphql-query-toolkit
 ```
 
 ### 2. Setup GraphQL Structure
 
 ```bash
 # Run the setup command in your app directory
-npx query-gen setup --endpoint https://your-api.com/graphql --api-key your-key
+npx graphql-query-toolkit setup --endpoint https://your-api.com/graphql --api-key your-key
 ```
 
 This creates:
@@ -113,7 +112,7 @@ Note: `useUtils` is still exported as a backwards-compatible alias of the servic
 ### Setup Command
 
 ```bash
-query-gen setup [options]
+graphql-query-toolkit setup [options]
 ```
 
 **Options:**
@@ -125,19 +124,19 @@ query-gen setup [options]
 **Examples:**
 ```bash
 # Basic setup
-query-gen setup --endpoint https://api.example.com/graphql
+graphql-query-toolkit setup --endpoint https://api.example.com/graphql
 
 # With authentication
-query-gen setup --endpoint https://api.example.com/graphql --api-key abc123
+graphql-query-toolkit setup --endpoint https://api.example.com/graphql --api-key abc123
 
 # Custom app name
-query-gen setup --app-name booking --endpoint https://notification-service.com/graphql
+graphql-query-toolkit setup --app-name booking --endpoint https://notification-service.com/graphql
 ```
 
 ## Package Structure
 
 ```
-packages/portal-query/
+graphql-query-toolkit/
 ├── src/
 │   ├── templates/           # Template files for setup
 │   │   ├── client.ts.template
@@ -158,7 +157,7 @@ packages/portal-query/
 
 ## Generated App Structure
 
-After running `query-gen setup`, your app will have:
+After running `graphql-query-toolkit setup`, your app will have:
 
 ```
 src/libs/gql/
@@ -269,7 +268,7 @@ export async function POST(
 
 ```typescript
 // src/libs/gql/codegen.config.ts
-import { createCodegenConfig } from '@repo/portal-query/core/codegen';
+import { createCodegenConfig } from 'graphql-query-toolkit/core/codegen';
 
 const config = createCodegenConfig({
   endpoints: {
@@ -330,7 +329,7 @@ For single GraphQL endpoint, simply pass one endpoint in the endpoints object:
 
 ```typescript
 // src/libs/gql/codegen.config.ts
-import { createCodegenConfig } from '@repo/portal-query/core/codegen';
+import { createCodegenConfig } from 'graphql-query-toolkit/core/codegen';
 
 const config = createCodegenConfig({
   endpoints: {
@@ -357,7 +356,7 @@ For applications that need to connect to multiple GraphQL endpoints (or even jus
 
 ```typescript
 // src/libs/gql/codegen.config.ts
-import { createCodegenConfig } from '@repo/portal-query/core/codegen';
+import { createCodegenConfig } from 'graphql-query-toolkit/core/codegen';
 
 const config = createCodegenConfig({
   endpoints: {
@@ -493,11 +492,11 @@ export const createUtils = (queryClient: QueryClient) => ({
 
 **Setup command not found:**
 ```bash
-# Ensure the package is built
-cd packages/portal-query && pnpm build
+# Make sure the package is installed globally or use npx
+npm install -g graphql-query-toolkit
 
-# Or use npx from your app directory
-npx @repo/portal-query setup
+# Or use npx directly
+npx graphql-query-toolkit setup
 ```
 
 **TypeScript errors after generation:**

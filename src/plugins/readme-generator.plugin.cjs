@@ -147,9 +147,6 @@ function extractServiceName(operationName) {
     const match = operationName.match(pattern);
     if (match) {
       let serviceName = transform(match);
-      if (serviceName === 'notifications') return 'notifications';
-      if (serviceName === 'users') return 'users';
-      if (serviceName === 'bookings') return 'bookings';
       return serviceName;
     }
   }
@@ -170,7 +167,6 @@ function extractShortName(operationName) {
       .replace(/^(Get|Create|Update|Delete)/, '')
       .replace(/Service/, '')
       .replace(/^User/, '')
-      .replace(/^Booking/, '');
   }
 
   return 'get' + shortName;
