@@ -75,14 +75,18 @@ export function createUtilsFactory(config: UtilsConfig) {
            * Get cached data for this operation
            */
           getData: (variables?: any) => {
-            return queryClient.getQueryData(queryKeys[operationName](variables));
+            const keyFn = queryKeys[operationName];
+            if (!keyFn) return undefined;
+            return queryClient.getQueryData(keyFn(variables));
           },
 
           /**
            * Set data for this operation
            */
           setData: (data: any | ((old: any) => any), variables?: any) => {
-            queryClient.setQueryData(queryKeys[operationName](variables), data);
+            const keyFn = queryKeys[operationName];
+            if (!keyFn) return;
+            queryClient.setQueryData(keyFn(variables), data);
           },
 
           /**

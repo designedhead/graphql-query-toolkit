@@ -188,5 +188,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     }
   }
 
-  await setupGraphQLStructure(options);
+  (async () => {
+    await setupGraphQLStructure(options);
+  })();
 }

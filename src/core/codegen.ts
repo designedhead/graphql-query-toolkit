@@ -123,17 +123,20 @@ export function createCodegenConfig(options: CodegenOptions): CodegenConfig {
   });
 
   // Generate a single README for all endpoints (use first endpoint's schema as placeholder)
-  const firstEndpoint = Object.values(endpoints)[0] || [];
-  const endpointNames = Object.keys(endpoints) || [];
-  generates[`${baseOutputDir}/../README.md`] = {
-    schema: { [firstEndpoint.schema]: { headers: firstEndpoint.headers || {} } },
-    plugins: [join(__dirname, '../plugins/readme-generator.plugin.cjs')],
-    config: {
-      appName: endpointNames.length ? `${appName} (Multi-endpoint: ${endpointNames.join(', ')})` : appName,
-      endpoints: endpointNames,
-      isMultiEndpoint: !!endpointNames.length
-    }
-  };
+  const firstEndpoint = Object.values(endpoints)[0];
+  const endpointNames = Object.keys(endpoints);
+
+  if (firstEndpoint) {
+    generates[`${baseOutputDir}/../README.md`] = {
+      schema: { [firstEndpoint.schema]: { headers: firstEndpoint.headers || {} } },
+      plugins: [join(__dirname, '../plugins/readme-generator.plugin.cjs')],
+      config: {
+        appName: endpointNames.length ? `${appName} (Multi-endpoint: ${endpointNames.join(', ')})` : appName,
+        endpoints: endpointNames,
+        isMultiEndpoint: !!endpointNames.length
+      }
+    };
+  }
 
   return {
     ignoreNoDocuments: true,
